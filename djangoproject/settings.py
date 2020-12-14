@@ -29,7 +29,7 @@ SECRET_KEY = '^h_nq8_5zc1^$-)z^yu3#&_cb_cv!0cxtn3o-ubw%u75wf%qky'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['salty-garden-79943.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
