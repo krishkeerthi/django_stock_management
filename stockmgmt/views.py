@@ -34,7 +34,7 @@ def list_items(request):
 	}
 
 	if request.method == 'POST':
-        category = form['category'].value()
+                category = form['category'].value()
 		item_name = form['item_name'].value()
 
 		if(category != ''):
@@ -42,7 +42,6 @@ def list_items(request):
 
 		if(item_name != ""):
 			queryset = queryset.filter(item_name__icontains = item_name)
-		#queryset = Stock.objects.filter(item_name__icontains=form['item_name'].value()
 									)
 		if form['export_to_CSV'].value() == True:
 			response = HttpResponse(content_type='text/csv')
@@ -229,7 +228,7 @@ def list_history(request):
 	}
 
 	if request.method == 'POST':
-        category = form['category'].value()
+                category = form['category'].value()
 		item_name = form['item_name'].value()
 		start_date = form['start_date'].value()
 		end_date = form['end_date'].value()
