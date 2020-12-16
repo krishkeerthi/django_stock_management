@@ -34,7 +34,7 @@ def list_items(request):
 	}
 
 	if request.method == 'POST':
-                category = form['category'].value()
+        category = form['category'].value()
 		item_name = form['item_name'].value()
 
 		if(category != ''):
