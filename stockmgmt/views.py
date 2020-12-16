@@ -34,7 +34,15 @@ def list_items(request):
 	}
 
 	if request.method == 'POST':
-		queryset = Stock.objects.filter(item_name__icontains=form['item_name'].value()
+                category = form['category'].value()
+		item_name = form['item_name'].value()
+
+		if(category != ''):
+			queryset = queryset.filter(category_id = category)
+
+		if(item_name != ""):
+			queryset = queryset.filter(item_name__icontains = item_name)
+		#queryset = Stock.objects.filter(item_name__icontains=form['item_name'].value()
 									)
 		if form['export_to_CSV'].value() == True:
 			response = HttpResponse(content_type='text/csv')
@@ -66,6 +74,22 @@ def add_items(request):
 		"title" : "Add Item"
 	}
 	return render(request, "add_items.html", context)
+
+@login_required
+def add_category(request):
+	form = CategoryCreateForm(request.POST or None)
+
+	if form.is_valid():
+		form.save()
+		messages.success(request, 'Category Successfully Saved')
+		return redirect('/list_items')
+
+	context = {
+	"form" : form,
+	"title" : "Add Category"
+	}
+
+	return render(request, "add_category.html", context)
 
 @login_required
 def upload_items(request):
@@ -205,17 +229,21 @@ def list_history(request):
 	}
 
 	if request.method == 'POST':
-		category = form['category'].value()
-		queryset = StockHistory.objects.filter(
-								item_name__icontains=form['item_name'].value(),
-								last_updated__range = [form['start_date'].value(),
-														form['end_date'].value()
-															]
-								)
+                category = form['category'].value()
+		item_name = form['item_name'].value()
+		start_date = form['start_date'].value()
+		end_date = form['end_date'].value()
 
 		if (category != ''):
 			queryset = queryset.filter(category_id=category)
 
+		if(item_name != ''):
+			queryset = queryset.filter(item_name__icontains = item_name)
+
+		if(start_date != '' and end_date != ''):
+			queryset = StockHistory.objects.filter(last_updated__range = [form['start_date'].value(),
+														form['end_date'].value() ] )
+		
 		if form['export_to_CSV'].value() == True:
 			response = HttpResponse(content_type='text/csv')
 			response['Content-Disposition'] = 'attachment; filename="Stock History.csv"'

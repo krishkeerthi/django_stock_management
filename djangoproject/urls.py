@@ -29,6 +29,7 @@ urlpatterns = [
     path('receive_items/<str:pk>/', views.receive_items, name="receive_items"),
     path('reorder_level/<str:pk>/', views.reorder_level, name="reorder_level"),
     path('add_items/', views.add_items, name = 'add_items'),
+    path('add_category', views.add_category, name = 'add_category'),
     path('upload_items/', views.upload_items, name = 'upload_items'),
     path('list_history/', views.list_history, name='list_history')
 

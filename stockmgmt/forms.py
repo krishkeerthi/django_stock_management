@@ -23,6 +23,23 @@ class StockCreateForm(forms.ModelForm):
 				raise forms.ValidationError(item_name + ' does exist already!')
 		return item_name
 
+class CategoryCreateForm(forms.ModelForm):
+	class Meta:
+		model = Category
+		fields = ['name']
+
+	def clean_name(self):
+		category = self.cleaned_data.get('name')
+
+		if not category:
+			raise forms.ValidationError('This field is required')
+
+		for instance in Category.objects.all():
+			if instance.name == category:
+				raise forms.ValidationError(category + ' exists already!')
+
+		return category
+
 class StockUploadForm(forms.ModelForm):
 	file = forms.FileField()
 	class Meta:
