@@ -34,7 +34,7 @@ def list_items(request):
 	}
 
 	if request.method == 'POST':
-                category = form['category'].value()
+        category = form['category'].value()
 		item_name = form['item_name'].value()
 
 		if(category != ''):
@@ -85,8 +85,8 @@ def add_category(request):
 		return redirect('/list_items')
 
 	context = {
-	"form" : form,
-	"title" : "Add Category"
+		"form" : form,
+		"title" : "Add Category"
 	}
 
 	return render(request, "add_category.html", context)
@@ -106,7 +106,7 @@ def upload_items(request):
         
         #return HttpResponseRedirect('/success/url/')
         
-    context={
+    context= {
     	"form" : form
     }
 
@@ -229,7 +229,7 @@ def list_history(request):
 	}
 
 	if request.method == 'POST':
-                category = form['category'].value()
+        category = form['category'].value()
 		item_name = form['item_name'].value()
 		start_date = form['start_date'].value()
 		end_date = form['end_date'].value()
