@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Stock,StockHistory
+from .models import Stock,StockHistory,Category
 
 class StockCreateForm(forms.ModelForm):
 	class Meta:
