@@ -42,7 +42,7 @@ def list_items(request):
 
 		if(item_name != ""):
 			queryset = queryset.filter(item_name__icontains = item_name)
-									)
+									
 		if form['export_to_CSV'].value() == True:
 			response = HttpResponse(content_type='text/csv')
 			response['Content-Disposition'] = 'attachment; filename="List of stocks.csv"'
