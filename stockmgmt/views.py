@@ -172,7 +172,7 @@ def issue_items(request, pk):
 			category_id = instance.category_id,
 			item_name = instance.item_name, 
 			quantity = instance.quantity, 
-			issue_to = instance.issue_to, 
+			receive_by = instance.receive_by, 
 			issue_by = instance.issue_by, 
 			issue_quantity = instance.issue_quantity, 
 			)
@@ -216,7 +216,7 @@ def receive_items(request, pk):
 		return redirect('/stock_detail/'+str(instance.id))
 		# return HttpResponseRedirect(instance.get_absolute_url())
 	context = {
-			"title": 'Reaceive ' + str(queryset.item_name),
+			"title": 'Receive ' + str(queryset.item_name),
 			"instance": queryset,
 			"form": form,
 			"username": 'Receive By: ' + str(request.user),
