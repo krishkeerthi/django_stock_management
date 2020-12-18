@@ -22,9 +22,9 @@
     </ul>
     <ul class="navbar-nav">
         {% if request.user.is_authenticated %}
-        <li><a href="/accounts/logout"><button class="btn btn-danger">{{ user }} | Logout</button></a></li>
+        <li><a href="/logout"><button class="btn btn-danger">{{ user }} | Logout</button></a></li>
         {% else %}
-        <li><a href="/accounts/login"<button class = "btn btn-primary mybutton">Login</button></a></li>
+        <li><a href="/login"<button class = "btn btn-primary mybutton">Login</button></a></li>
         {% endif %}
     </ul>
   </div>
