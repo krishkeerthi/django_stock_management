@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, logout, authenticate
 from tablib import Dataset
 import csv, xlrd
 import os
@@ -297,3 +299,41 @@ def list_history(request):
 		"queryset": queryset,
 	}
 	return render(request, "list_history.html",context)
+
+
+def register(request):
+	form = CustomUserCreationForm(request.POST)
+	if request.method == "POST":
+		if form.is_valid():
+			user = form.save()
+			user.is_active = True
+			login(request, user)
+
+		return redirect("/list_items")
+
+	return render(request, "register.html", {"form" : form, "title" : "Sign Up"})
+
+
+def login_request(request):
+    if request.method == 'POST':
+        form = AuthenticationFormWithInactiveUsersOkay(request=request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                #messages.info(request, f"You are now logged in as {username}")
+                return redirect('/list_items')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    form = AuthenticationFormWithInactiveUsersOkay()
+
+    return render(request, "login.html", {"form":form, "title" : "Log in"})
+
+def logout_request(request):
+    logout(request)
+
+    return render(request, "logout.html")

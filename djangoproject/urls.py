@@ -19,7 +19,10 @@ from stockmgmt import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('registration.backends.default.urls')), 
+    #path('accounts/', include('registration.backends.default.urls')),
+    path("logout/", views.logout_request, name="logout"),
+    path("login/", views.login_request, name="login"),
+    path('register/', views.register, name='register_user'), 
     path('', views.home, name = 'home'),
     path('list_items/', views.list_items, name = 'list_items'),
     path('update_items/<str:pk>/', views.update_items, name="update_items"),

@@ -2,6 +2,9 @@ from django import forms
 
 from .models import Stock,StockHistory,Category
 
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+
 class StockCreateForm(forms.ModelForm):
 	class Meta:
 		model = Stock
@@ -81,3 +84,13 @@ class ReorderLevelForm(forms.ModelForm):
 	class Meta:
 		model = Stock
 		fields = ['reorder_level']
+
+class CustomUserCreationForm(UserCreationForm):
+	email = forms.EmailField()
+	class Meta():
+		model = User
+		fields = ["username" , "email", "password1", "password2"]
+
+class AuthenticationFormWithInactiveUsersOkay(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        pass
