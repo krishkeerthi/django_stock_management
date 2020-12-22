@@ -27,7 +27,7 @@ def home(request):
 @login_required
 def list_items(request):
 	header = "LIST OF ITEMS"
-	queryset = Stock.objects.all()
+	queryset = Stock.objects.filter(user = request.user)
 	form = StockSearchForm(request.POST or None)
 	context = {
 		"header" : header,
@@ -66,8 +66,10 @@ def add_items(request):
 	form = StockCreateForm(request.POST or None)
 
 	if form.is_valid():
-		form.save()
-		messages.success(request, 'Successfully Saved')
+		fs =form.save(commit = False)
+		fs.user = request.user
+		fs.save()
+		messages.success(request, 'Item Added Successfully ')
 		return redirect('/list_items')
 
 	context ={
@@ -82,7 +84,7 @@ def add_category(request):
 
 	if form.is_valid():
 		form.save()
-		messages.success(request, 'Category Successfully Saved')
+		messages.success(request, 'Category Added Successfully ')
 		return redirect('/list_items')
 
 	context = {
@@ -121,13 +123,13 @@ def handle_uploaded_file(request,filename):
 
 	for i in range(1, sheet.nrows):
 		c, created = Category.objects.get_or_create(name = sheet.cell_value(i,0))
-		s = Stock(category = c, item_name = sheet.cell_value(i,1) , quantity = sheet.cell_value(i,2) )
+		s = Stock(category = c, item_name = sheet.cell_value(i,1) , quantity = sheet.cell_value(i,2), user = request.user )
 		s.save()
 
 
 
 def update_items(request, pk):
-	queryset = Stock.objects.get(id=pk)
+	queryset = Stock.objects.get(id=pk, user = request.user)
 	form = StockUpdateForm(instance=queryset)
 	if request.method == 'POST':
 		form = StockUpdateForm(request.POST, instance=queryset)
@@ -142,7 +144,7 @@ def update_items(request, pk):
 	return render(request, 'add_items.html', context)
 
 def delete_items(request, pk):
-	queryset = Stock.objects.get(id=pk)
+	queryset = Stock.objects.get(id=pk, user = request.user)
 	if request.method == 'POST':
 		queryset.delete()
 		messages.success(request, 'Deleted Successfully')
@@ -150,14 +152,14 @@ def delete_items(request, pk):
 	return render(request, 'delete_items.html')
 
 def stock_detail(request, pk):
-	queryset = Stock.objects.get(id=pk)
+	queryset = Stock.objects.get(id=pk, user = request.user)
 	context = {
 		'queryset':queryset
 	}
 	return render(request, 'stock_detail.html',context)
 
 def issue_items(request, pk):
-	queryset = Stock.objects.get(id=pk)
+	queryset = Stock.objects.get(id=pk, user = request.user)
 	form = IssueForm(request.POST or None, instance=queryset)
 	if form.is_valid():
 		instance = form.save(commit=False)
@@ -176,7 +178,8 @@ def issue_items(request, pk):
 			quantity = instance.quantity, 
 			receive_by = instance.receive_by, 
 			issue_by = instance.issue_by, 
-			issue_quantity = instance.issue_quantity, 
+			issue_quantity = instance.issue_quantity,
+			user_id = instance.user_id
 			)
 		issue_history.save()
 
@@ -194,7 +197,7 @@ def issue_items(request, pk):
 
 
 def receive_items(request, pk):
-	queryset = Stock.objects.get(id=pk)
+	queryset = Stock.objects.get(id=pk, user = request.user)
 	form = ReceiveForm(request.POST or None, instance=queryset)
 	if form.is_valid():
 		instance = form.save(commit=False)
@@ -210,7 +213,8 @@ def receive_items(request, pk):
 			item_name = instance.item_name, 
 			quantity = instance.quantity, 
 			receive_quantity = instance.receive_quantity, 
-			receive_by = instance.receive_by
+			receive_by = instance.receive_by,
+			user_id = instance.user_id
 			)
 		receive_history.save()
 		messages.success(request, "Received SUCCESSFULLY. " + str(instance.quantity) + " " + str(instance.item_name)+"s are now available in Store")
@@ -227,7 +231,7 @@ def receive_items(request, pk):
 
 
 def reorder_level(request, pk):
-	queryset = Stock.objects.get(id=pk)
+	queryset = Stock.objects.get(id=pk, user = request.user)
 	form = ReorderLevelForm(request.POST or None, instance=queryset)
 	if form.is_valid():
 		instance = form.save(commit=False)
@@ -244,7 +248,7 @@ def reorder_level(request, pk):
 @login_required
 def list_history(request):
 	header = 'HISTORY OF ITEMS'
-	queryset = StockHistory.objects.all()
+	queryset = StockHistory.objects.filter(user = request.user)
 	form = StockHistorySearchForm(request.POST or None)
 	context = {
 		"form" : form,
