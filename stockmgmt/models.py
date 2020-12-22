@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -31,6 +31,7 @@ class Stock(models.Model):
 	reorder_level = models.IntegerField(default = '0', blank = True, null = True)
 	last_updated = models.DateTimeField(auto_now_add = False, auto_now = True)
 	timestamp = models.DateTimeField(auto_now_add = True, auto_now = False)
+	owner = models.ForeignKey(User, on_delete = models.CASCADE, blank= True)
 	
 
 	def __str__(self):
@@ -51,5 +52,7 @@ class StockHistory(models.Model):
 	reorder_level = models.IntegerField(default='0', blank=True, null=True)
 	last_updated = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
 	timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
+	owner = models.ForeignKey(User, on_delete= models.CASCADE, blank = True)
+	
 
 
