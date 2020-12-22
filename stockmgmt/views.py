@@ -104,7 +104,7 @@ def upload_items(request):
     	handle_uploaded_file(request,request.FILES['file'])
     	#uploaded_file = request.FILES['file']
 
-    	messages.success(request, "File successfully uploaded")
+    	messages.success(request, "File Uploaded Successfully ")
     	return redirect('/list_items')
         
         #return HttpResponseRedirect('/success/url/')
@@ -135,7 +135,7 @@ def update_items(request, pk):
 		form = StockUpdateForm(request.POST, instance=queryset)
 		if form.is_valid():
 			form.save()
-			messages.success(request, 'Successfully Saved')
+			messages.success(request, 'Updated Successfully ')
 			return redirect('/list_items')
 
 	context = {
