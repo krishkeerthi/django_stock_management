@@ -27,7 +27,7 @@ def home(request):
 @login_required
 def list_items(request):
 	header = "LIST OF ITEMS"
-	queryset = Stock.objects.filter(owner = request.user)
+	queryset = Stock.objects.all()
 	form = StockSearchForm(request.POST or None)
 	context = {
 		"header" : header,
@@ -66,9 +66,9 @@ def add_items(request):
 	form = StockCreateForm(request.POST or None)
 
 	if form.is_valid():
-		fs =form.save(commit = False)
-		fs.owner = request.user
-		fs.save()
+		form.save()
+		#fs.owner = request.user
+		#fs.save()
 		messages.success(request, 'Item Added Successfully ')
 		return redirect('/list_items')
 
@@ -123,13 +123,13 @@ def handle_uploaded_file(request,filename):
 
 	for i in range(1, sheet.nrows):
 		c, created = Category.objects.get_or_create(name = sheet.cell_value(i,0))
-		s = Stock(category = c, item_name = sheet.cell_value(i,1) , quantity = sheet.cell_value(i,2), owner = request.user )
+		s = Stock(category = c, item_name = sheet.cell_value(i,1) , quantity = sheet.cell_value(i,2))
 		s.save()
 
 
 
 def update_items(request, pk):
-	queryset = Stock.objects.get(id=pk, owner = request.user)
+	queryset = Stock.objects.get(id=pk)
 	form = StockUpdateForm(instance=queryset)
 	if request.method == 'POST':
 		form = StockUpdateForm(request.POST, instance=queryset)
@@ -144,7 +144,7 @@ def update_items(request, pk):
 	return render(request, 'add_items.html', context)
 
 def delete_items(request, pk):
-	queryset = Stock.objects.get(id=pk, owner = request.user)
+	queryset = Stock.objects.get(id=pk)
 	if request.method == 'POST':
 		queryset.delete()
 		messages.success(request, 'Deleted Successfully')
@@ -152,14 +152,14 @@ def delete_items(request, pk):
 	return render(request, 'delete_items.html')
 
 def stock_detail(request, pk):
-	queryset = Stock.objects.get(id=pk, owner = request.user)
+	queryset = Stock.objects.get(id=pk)
 	context = {
 		'queryset':queryset
 	}
 	return render(request, 'stock_detail.html',context)
 
 def issue_items(request, pk):
-	queryset = Stock.objects.get(id=pk, owner = request.user)
+	queryset = Stock.objects.get(id=pk)
 	form = IssueForm(request.POST or None, instance=queryset)
 	if form.is_valid():
 		instance = form.save(commit=False)
@@ -178,8 +178,7 @@ def issue_items(request, pk):
 			quantity = instance.quantity, 
 			receive_by = instance.receive_by, 
 			issue_by = instance.issue_by, 
-			issue_quantity = instance.issue_quantity,
-			owner_id = instance.owner_id
+			issue_quantity = instance.issue_quantity
 			)
 		issue_history.save()
 
@@ -197,7 +196,7 @@ def issue_items(request, pk):
 
 
 def receive_items(request, pk):
-	queryset = Stock.objects.get(id=pk, owner = request.user)
+	queryset = Stock.objects.get(id=pk)
 	form = ReceiveForm(request.POST or None, instance=queryset)
 	if form.is_valid():
 		instance = form.save(commit=False)
@@ -213,8 +212,7 @@ def receive_items(request, pk):
 			item_name = instance.item_name, 
 			quantity = instance.quantity, 
 			receive_quantity = instance.receive_quantity, 
-			receive_by = instance.receive_by,
-			owner_id = instance.owner_id
+			receive_by = instance.receive_by
 			)
 		receive_history.save()
 		messages.success(request, "Received SUCCESSFULLY. " + str(instance.quantity) + " " + str(instance.item_name)+"s are now available in Store")
@@ -231,7 +229,7 @@ def receive_items(request, pk):
 
 
 def reorder_level(request, pk):
-	queryset = Stock.objects.get(id=pk, owner = request.user)
+	queryset = Stock.objects.get(id=pk)
 	form = ReorderLevelForm(request.POST or None, instance=queryset)
 	if form.is_valid():
 		instance = form.save(commit=False)
@@ -248,7 +246,7 @@ def reorder_level(request, pk):
 @login_required
 def list_history(request):
 	header = 'HISTORY OF ITEMS'
-	queryset = StockHistory.objects.filter(owner = request.user)
+	queryset = StockHistory.objects.all()
 	form = StockHistorySearchForm(request.POST or None)
 	context = {
 		"form" : form,
