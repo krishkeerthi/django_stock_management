@@ -68,7 +68,7 @@ def add_items(request):
 	if form.is_valid():
 		fs =form.save(commit = False)
 		fs.item_name = "Chocolate"
-		fs.user_id = request.user
+		fs.user_id = request.user.id
 		fs.save()
 		messages.success(request, 'Item Added Successfully ')
 		return redirect('/list_items')
