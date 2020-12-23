@@ -179,7 +179,7 @@ def issue_items(request, pk):
 			receive_by = instance.receive_by, 
 			issue_by = instance.issue_by, 
 			issue_quantity = instance.issue_quantity,
-			owner = instance.owner
+			owner_id = instance.owner_id
 			)
 		issue_history.save()
 
@@ -214,7 +214,7 @@ def receive_items(request, pk):
 			quantity = instance.quantity, 
 			receive_quantity = instance.receive_quantity, 
 			receive_by = instance.receive_by,
-			owner = instance.owner
+			owner_id = instance.owner_id
 			)
 		receive_history.save()
 		messages.success(request, "Received SUCCESSFULLY. " + str(instance.quantity) + " " + str(instance.item_name)+"s are now available in Store")
