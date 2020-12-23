@@ -27,7 +27,7 @@ def home(request):
 @login_required
 def list_items(request):
 	header = "LIST OF ITEMS"
-	queryset = Stock.objects.filter(user = request.user)
+	queryset = Stock.objects.filter(user_id = request.user)
 	form = StockSearchForm(request.POST or None)
 	context = {
 		"header" : header,
@@ -67,7 +67,7 @@ def add_items(request):
 
 	if form.is_valid():
 		fs =form.save(commit = False)
-		fs.user = request.user
+		fs.user_id = request.user
 		fs.save()
 		messages.success(request, 'Item Added Successfully ')
 		return redirect('/list_items')
@@ -123,7 +123,7 @@ def handle_uploaded_file(request,filename):
 
 	for i in range(1, sheet.nrows):
 		c, created = Category.objects.get_or_create(name = sheet.cell_value(i,0))
-		s = Stock(category = c, item_name = sheet.cell_value(i,1) , quantity = sheet.cell_value(i,2), user = request.user)
+		s = Stock(category = c, item_name = sheet.cell_value(i,1) , quantity = sheet.cell_value(i,2), user_id = request.user)
 		s.save()
 
 
