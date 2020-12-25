@@ -22,9 +22,9 @@ class StockCreateForm(forms.ModelForm):
 			raise forms.ValidationError('This field is required')
 
 		for instance in Stock.objects.all():
-			if instance.item_name == item_name:
+			if instance.item_name.lower() == item_name.lower():
 				raise forms.ValidationError(item_name + ' does exist already!')
-		return item_name
+		return item_name.title()
 
 class CategoryCreateForm(forms.ModelForm):
 	class Meta:
@@ -38,10 +38,10 @@ class CategoryCreateForm(forms.ModelForm):
 			raise forms.ValidationError('This field is required')
 
 		for instance in Category.objects.all():
-			if instance.name == category:
+			if instance.name.lower() == category.lower():
 				raise forms.ValidationError(category + ' exists already!')
 
-		return category
+		return category.title()
 
 class StockUploadForm(forms.ModelForm):
 	file = forms.FileField()
