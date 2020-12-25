@@ -11,6 +11,15 @@ import os
 from .models import *
 from .forms import *
 from .resources import StockResource
+#for pdf 
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+import datetime
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 
 
 # Create your views here.
@@ -54,6 +63,37 @@ def list_items(request):
 			for stock in instance:
 			 writer.writerow([stock.category, stock.item_name, stock.quantity])
 			return response
+
+		if form['export_to_PDF'].value() == True:
+			buffer = io.BytesIO()
+
+			# container for the 'Flowable' objects
+			elements = []
+			cm = 2.54
+			user = str(request.user).capitalize()
+
+			doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=15 * cm, leftMargin=15 * cm, topMargin=10 * cm, bottomMargin=0)
+
+			data= [ ['YOUR STOCK MANAGEMENT', '', user ],
+			['','LIST OF STOCKS',''],
+			['CATEGORY','ITEM NAME', 'QUANTITY']]
+
+			for stock in queryset:
+				lst =[stock.category, stock.item_name, stock.quantity]
+				data.append(lst)
+
+			t=Table(data, colWidths=200, rowHeights=50)
+			t.setStyle(TableStyle([('GRID',(0,2),(-1,-1), 1, colors.black)]))
+
+			elements.append(t)
+			# write the document to disk
+			doc.build(elements)
+
+			buffer.seek(0)
+			x = datetime.datetime.now()
+			fname = "ListOfStocks" +str(x.strftime("%x")) + ".pdf"
+
+			return FileResponse(buffer, as_attachment = True, filename = fname)
 		context = {
 		"form": form,
 		"header": header,
@@ -266,7 +306,7 @@ def list_history(request):
 			queryset = queryset.filter(category_id=category)
 
 		if(item_name != ''):
-			queryset = queryset.filter(item_name__icontains = item_name)
+			queryset = queryset.filter(item_name__icontains = item_name )
 
 		if(start_date != '' and end_date != ''):
 			queryset = StockHistory.objects.filter(last_updated__range = [start_date, end_date] )
@@ -296,6 +336,38 @@ def list_history(request):
 				stock.issue_by, 
 				stock.last_updated])
 			return response
+
+		if form['export_to_PDF'].value() == True:
+			buffer = io.BytesIO()
+
+			# container for the 'Flowable' objects
+			elements = []
+			cm = 2.54
+			user = str(request.user).capitalize()
+
+			doc = SimpleDocTemplate(buffer, rightMargin=5 * cm, leftMargin=5 * cm, topMargin=10 * cm, bottomMargin=0)
+
+			data= [ ['YOUR STOCK MANAGEMENT','','' ,'','','','',user],
+			['','','' ,'HISTORY OF STOCKS','', '', '',''],
+			['CATEGORY','ITEM NAME', 'QUANTITY',Paragraph('ISSUE QUANTITY'), Paragraph('RECEIVE QUANTITY'), 'RECEIVE BY', 'ISSUE BY',Paragraph('LAST UPDATED')]]
+
+			for stock in queryset:
+				time = stock.last_updated.strftime("%d/%m/%Y, %H:%M:%S")
+				lst =[Paragraph(str(stock.category)), Paragraph(stock.item_name), stock.quantity, stock.issue_quantity, stock.receive_quantity, stock.receive_by, stock.issue_by, Paragraph(time) ]
+				data.append(lst)
+
+			t=Table(data, colWidths=70, rowHeights=50)
+			t.setStyle(TableStyle([('GRID',(0,2),(-1,-1), 1, colors.black)]))
+
+			elements.append(t)
+			# write the document to disk
+			doc.build(elements)
+
+			buffer.seek(0)
+			x = datetime.datetime.now()
+			fname = "HistoryOfStocks" +str(x.strftime("%x")) + ".pdf"
+
+			return FileResponse(buffer, as_attachment = True, filename = fname)
 
 		context = {
 		"form": form,
