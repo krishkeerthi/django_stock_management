@@ -211,7 +211,7 @@ def issue_items(request, pk):
 		instance.save()
 
 		issue_history = StockHistory(
-			id = instance.id, 
+			#id = instance.id, 
 			last_updated = instance.last_updated,
 			category_id = instance.category_id,
 			item_name = instance.item_name, 
@@ -247,7 +247,7 @@ def receive_items(request, pk):
 		instance.save()
 
 		receive_history = StockHistory(
-			id = instance.id, 
+			#id = instance.id, 
 			last_updated = instance.last_updated,
 			category_id = instance.category_id,
 			item_name = instance.item_name, 
