@@ -52,7 +52,7 @@ class StockUploadForm(forms.ModelForm):
 	def clean_file(self):
 		file = self.cleaned_data.get('file')
 
-		if not file.lower().endswith(('.xlsx', '.xls')):
+		if not str(file).lower().endswith(('.xlsx', '.xls')):
 			raise forms.ValidationError('Only .xlsx, .xls extensions are supported')
 		return file
 
