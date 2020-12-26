@@ -55,8 +55,11 @@ def list_items(request):
 			queryset = queryset.filter(item_name__icontains = item_name)
 									
 		if form['export_to_CSV'].value() == True:
+			x = datetime.datetime.now()
+			filename = "ListOfStocks" +str(x.strftime("%x")) + ".csv"
+
 			response = HttpResponse(content_type='text/csv')
-			response['Content-Disposition'] = 'attachment; filename="List of stocks.csv"'
+			response['Content-Disposition'] = 'attachment; filename="%s"' %filename
 			writer = csv.writer(response)
 			writer.writerow(['CATEGORY', 'ITEM NAME', 'QUANTITY'])
 			instance = queryset
@@ -328,8 +331,11 @@ def list_history(request):
 			queryset = StockHistory.objects.filter(last_updated__range = [start_date, end_date] )
 		
 		if form['export_to_CSV'].value() == True:
+			x = datetime.datetime.now()
+			filename = "ListOfStocks" +str(x.strftime("%x")) + ".csv"
+
 			response = HttpResponse(content_type='text/csv')
-			response['Content-Disposition'] = 'attachment; filename="Stock History.csv"'
+			response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 			writer = csv.writer(response)
 			writer.writerow(
 				['CATEGORY', 
