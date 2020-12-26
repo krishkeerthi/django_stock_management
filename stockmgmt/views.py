@@ -144,10 +144,10 @@ def upload_items(request):
  
     if form.is_valid():
     	#form.save() 	
-    	handle_uploaded_file(request,request.FILES['file'])
+    	msg = handle_uploaded_file(request,request.FILES['file'])
     	#uploaded_file = request.FILES['file']
 
-    	messages.success(request, "File Uploaded Successfully ")
+    	messages.success(request, msg)
     	return redirect('/list_items')
         
         #return HttpResponseRedirect('/success/url/')
@@ -165,26 +165,42 @@ def handle_uploaded_file(request,filename):
 	wb = xlrd.open_workbook(file_contents = filename.read())
 	sheet = wb.sheet_by_index(0)
 
+	invalidRows = False
+
 	for i in range(1, sheet.nrows):
 		cate = sheet.cell_value(i,0)
 		itemName = sheet.cell_value(i,1)
 		quant = sheet.cell_value(i,2)
 		visited = False
 
-		c, created = Category.objects.get_or_create(name = cate.title())
+		if cate != "" and itemName != "" and quant != "":
+			q = int(quant)
 
-		for instance in queryset:
-			if instance.category == c and instance.item_name == itemName.title():
-				instance.quantity += quant
-				instance.save()
-				visited = True
-				break
+			if isinstance(cate, str) and isinstance(itemName, str) and isinstance(q,int):
+				c, created = Category.objects.get_or_create(name = cate.title())
 
-		if not visited:
-			s = Stock(category = c, item_name = itemName.title() , quantity = quant, user = request.user )
-			s.save()
+				for instance in queryset:
+					if instance.category == c and instance.item_name == itemName.title():
+						instance.quantity += quant
+						instance.save()
+						visited = True
+						break
 
-		queryset = Stock.objects.filter(user = request.user)
+				if not visited:
+					s = Stock(category = c, item_name = itemName.title() , quantity = quant, user = request.user )
+					s.save()
+
+				queryset = Stock.objects.filter(user = request.user)
+
+			else:
+				invalidRows = True
+		else:
+			invalidRows = True
+
+	if invalidRows:
+		return "There are some Invalid entries, apart from that are uploaded successfully"
+	else:
+		return "File Uploaded Successfully"
 
 
 def update_items(request, pk):
