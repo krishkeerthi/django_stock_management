@@ -49,6 +49,13 @@ class StockUploadForm(forms.ModelForm):
 		model = Stock
 		fields = ['file']
 
+	def clean_file(self):
+		file = self.cleaned_data.get('file')
+
+		if not file.lower().endswith(('.xlsx', '.xls')):
+			raise forms.ValidationError('Only .xlsx, .xls extensions are supported')
+		return file
+
 class StockSearchForm(forms.ModelForm):
    export_to_CSV = forms.BooleanField(required = False)
    export_to_PDF = forms.BooleanField(required = False)

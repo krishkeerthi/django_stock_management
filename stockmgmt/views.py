@@ -157,15 +157,31 @@ def upload_items(request):
 
 def handle_uploaded_file(request,filename):
 	#loc = r'C:\Users\hp\OneDrive\Documents\StockSample.xlsx'
+	queryset = Stock.objects.filter(user = request.user)
 
 	wb = xlrd.open_workbook(file_contents = filename.read())
 	sheet = wb.sheet_by_index(0)
 
 	for i in range(1, sheet.nrows):
-		c, created = Category.objects.get_or_create(name = sheet.cell_value(i,0))
-		s = Stock(category = c, item_name = sheet.cell_value(i,1) , quantity = sheet.cell_value(i,2), user = request.user)
-		s.save()
+		cate = sheet.cell_value(i,0)
+		itemName = sheet.cell_value(i,1)
+		quant = sheet.cell_value(i,2)
+		visited = False
 
+		c, created = Category.objects.get_or_create(name = cate.title())
+
+		for instance in queryset:
+			if instance.category == c and instance.item_name == itemName.title():
+				instance.quantity += quant
+				instance.save()
+				visited = True
+				break
+
+		if not visited:
+			s = Stock(category = c, item_name = itemName.title() , quantity = quant, user = request.user )
+			s.save()
+
+		queryset = Stock.objects.filter(user = request.user)
 
 
 def update_items(request, pk):
